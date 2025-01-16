@@ -1,5 +1,5 @@
 from fastapi import FastAPI, HTTPException, Depends, status
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from typing import Annotated
 import models
 from database import engine, SessionLocal
@@ -15,6 +15,20 @@ class IngresoBase2(BaseModel):
     idregistro: int
     documentoingreso: str
     nombrepersona: str
+class ProveedorBase(BaseModel):
+    nombre_proveedor: str
+    rfc: str | None = None
+    direccion: str | None = None
+    telefono: str | None = None
+    email: EmailStr | None = None
+    contacto: str | None = None
+    producto_principal: str | None = None
+
+class ProveedorResponse(ProveedorBase):
+    id_proveedor: int
+
+    class Config:
+        orm_mode = True
 
 def get_db():
     db = SessionLocal()
@@ -66,3 +80,44 @@ async def actualizar_registro(registro: IngresoBase2, db: db_dependency):
     registroactualizar.nombrepersona = registro.nombrepersona
     db.commit()
     return {"message": "Registro actualizado exitosamente"}
+
+@app.post("/proveedores/", status_code=status.HTTP_201_CREATED, response_model=ProveedorResponse)
+async def crear_proveedor(proveedor: ProveedorBase, db: db_dependency):
+    nuevo_proveedor = models.Proveedor(**proveedor.dict())
+    db.add(nuevo_proveedor)
+    db.commit()
+    return {"message": "El Proveedor se añadio  exitosamente"}
+
+
+
+@app.get("/proveedores/", status_code=status.HTTP_200_OK, response_model=list[ProveedorResponse])
+async def listar_proveedores(db: db_dependency):
+    proveedores = db.query(models.Proveedor).all()
+    return proveedores
+
+@app.get("/proveedores/{id_proveedor}", status_code=status.HTTP_200_OK, response_model=ProveedorResponse)
+async def obtener_proveedor(id_proveedor: int, db: db_dependency):
+    proveedor = db.query(models.Proveedor).filter(models.Proveedor.id_proveedor == id_proveedor).first()
+    if not proveedor:
+        raise HTTPException(status_code=404, detail="Proveedor no encontrado")
+    return proveedor
+
+@app.put("/proveedores/{id_proveedor}", status_code=status.HTTP_200_OK, response_model=ProveedorResponse)
+async def actualizar_proveedor(id_proveedor: int, proveedor: ProveedorBase, db: db_dependency):
+    proveedor_db = db.query(models.Proveedor).filter(models.Proveedor.id_proveedor == id_proveedor).first()
+    if not proveedor_db:
+        raise HTTPException(status_code=404, detail="Proveedor no encontrado")
+    for key, value in proveedor.dict(exclude_unset=True).items():
+        setattr(proveedor_db, key, value)
+    db.commit()
+    db.refresh(proveedor_db)
+    return proveedor_db
+
+@app.delete("/proveedores/{id_proveedor}", status_code=status.HTTP_204_NO_CONTENT)
+async def eliminar_proveedor(id_proveedor: int, db: db_dependency):
+    proveedor = db.query(models.Proveedor).filter(models.Proveedor.id_proveedor == id_proveedor).first()
+    if not proveedor:
+        raise HTTPException(status_code=404, detail="Proveedor no encontrado")
+    db.delete(proveedor)
+    db.commit()
+    return {"message": "Proveedor eliminado exitosamente"}
