@@ -86,9 +86,9 @@ async def crear_proveedor(proveedor: ProveedorBase, db: db_dependency):
     nuevo_proveedor = models.Proveedor(**proveedor.dict())
     db.add(nuevo_proveedor)
     db.commit()
-    return {"message": "El Proveedor se añadio  exitosamente"}
-
-
+    
+    db.refresh(nuevo_proveedor)
+    return nuevo_proveedor
 
 @app.get("/proveedores/", status_code=status.HTTP_200_OK, response_model=list[ProveedorResponse])
 async def listar_proveedores(db: db_dependency):
