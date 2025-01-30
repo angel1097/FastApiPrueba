@@ -1,12 +1,30 @@
-from sqlalchemy import String,Integer,Column
+from sqlalchemy import String, Integer, Column
 from database import Base
+from passlib.context import CryptContext
+
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+
+class User(Base):
+    __tablename__ = "users"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    username = Column(String(50), unique=True, nullable=False)
+    hashed_password = Column(String(255), nullable=False)
+    
+    def verify_password(self, password: str) -> bool:
+        return pwd_context.verify(password, self.hashed_password)
+    
+    @staticmethod
+    def hash_password(password: str) -> str:
+        return pwd_context.hash(password)
 
 class Ingreso(Base):
-    __tablename__="registrodeingreso"
-    idregistro=Column(Integer,primary_key=True,index=True)
-    documentoingreso=Column(String(100))
-    nombrepersona=Column(String(100))
-
+    __tablename__ = "ingresos"
+    
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    descripcion = Column(String(255), nullable=False)
+    cantidad = Column(Integer, nullable=False)
+    
 class Proveedor(Base):
     __tablename__ = "proveedores"
     id_proveedor = Column(Integer, primary_key=True, index=True, autoincrement=True)
