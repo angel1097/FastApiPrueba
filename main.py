@@ -1,9 +1,11 @@
 from fastapi import FastAPI, Depends, HTTPException,status
+from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
 from sqlalchemy.orm import Session
 import models, schemas
 import auth
 from database import SessionLocal
+
 
 app = FastAPI()
 def get_db():
@@ -24,7 +26,7 @@ class UserCreate(UserLogin):
 async def root():
     return {"message": "Bienvenido a la API de registros"}
 
-@app.post("/register/")
+@app.post("/register/", dependencies=[Depends(auth.get_current_user)])  # Agregar autenticación
 async def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     if db.query(models.User).filter(models.User.username == user_data.username).first():
         raise HTTPException(status_code=400, detail="El usuario ya existe")
@@ -33,6 +35,7 @@ async def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     db.add(new_user)
     db.commit()
     return {"message": "Usuario registrado exitosamente"}
+
 
 @app.post("/token/")
 async def login(user_data: UserLogin, db: Session = Depends(get_db)):
