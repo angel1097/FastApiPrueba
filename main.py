@@ -114,7 +114,25 @@ async def eliminar_proveedor(id_proveedor: int, db: Session = Depends(get_db)):
 @app.get("/pedidos/", tags=["Pedidos"])
 async def listar_pedidos():
     return {"message": "Aquí estarán los pedidos en el futuro"}
+@app.post("/pedidos/", tags=["Pedidos"])
+async def listar_pedidos():
+    return {"message": "Aquí estarán los pedidos en el futuro"}
+@app.put("/pedidos/", tags=["Pedidos"])
+async def listar_pedidos():
+    return {"message": "Aquí estarán los pedidos en el futuro"}
+@app.delete("/pedidos/", tags=["Pedidos"])
+async def listar_pedidos():
+    return {"message": "Aquí estarán los pedidos en el futuro"}
 
 @app.get("/facturas/", tags=["Facturas"])
+async def listar_facturas():
+    return {"message": "Aquí estarán las facturas en el futuro"}
+@app.post("/facturas/", tags=["Facturas"])
+async def listar_facturas():
+    return {"message": "Aquí estarán las facturas en el futuro"}
+@app.put("/facturas/", tags=["Facturas"])
+async def listar_facturas():
+    return {"message": "Aquí estarán las facturas en el futuro"}
+@app.delete("/facturas/", tags=["Facturas"])
 async def listar_facturas():
     return {"message": "Aquí estarán las facturas en el futuro"}
