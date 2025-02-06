@@ -114,6 +114,9 @@ async def eliminar_proveedor(id_proveedor: int, db: Session = Depends(get_db)):
 @app.get("/pedidos/", tags=["Pedidos"])
 async def listar_pedidos():
     return {"message": "Aquí estarán los pedidos en el futuro"}
+@app.post("/pedidos/", tags=["Pedidos"])
+async def listar_pedidos():
+    return {"message": "Aquí estarán los pedidos en el futuro"}
 
 @app.get("/pedidos/{id_pedido}", tags=["Pedidos"])
 async def listar_pedidos():
