@@ -42,10 +42,19 @@ async def root():
 async def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
     if db.query(models.User).filter(models.User.username == user_data.username).first():
         raise HTTPException(status_code=400, detail="El usuario ya existe")
+    
     hashed_password = models.User.hash_password(user_data.password)
-    new_user = models.User(username=user_data.username, hashed_password=hashed_password)
+    new_user = models.User(
+        username=user_data.username,
+        hashed_password=hashed_password,
+        email=user_data.email,
+        role=user_data.role
+    )
+    
     db.add(new_user)
     db.commit()
+    db.refresh(new_user)
+    
     return {"message": "Usuario registrado exitosamente"}
 
 @app.post("/token/", tags=["Autenticación"])
