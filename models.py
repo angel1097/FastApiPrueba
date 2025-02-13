@@ -10,6 +10,8 @@ class User(Base):
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
     username = Column(String(50), unique=True, nullable=False)
     hashed_password = Column(String(255), nullable=False)
+    email = Column(String(100), nullable=False)
+    role = Column(String(50), nullable=False)
     
     def verify_password(self, password: str) -> bool:
         return pwd_context.verify(password, self.hashed_password)

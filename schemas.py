@@ -1,10 +1,25 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from datetime import datetime
 
 class IngresoBase(BaseModel):
     usuario_id: int
     fecha_ingreso: datetime
 
+
+class UserBase(BaseModel):
+    username: str
+    password: str
+    email: str
+    role: str
+
+class UserCreate(UserBase):
+    password: str
+
+class UserResponse(UserBase):
+    id: int
+
+    class Config:
+        from_attributes = True
 class IngresoCreate(IngresoBase):
     pass
 

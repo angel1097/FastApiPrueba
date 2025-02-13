@@ -38,19 +38,18 @@ class UserCreate(UserLogin):
 async def root():
     return {"message": "Bienvenido a la API de registros"}
 
-@app.post("/register/", dependencies=[Depends(auth.get_current_user)], tags=["Autenticación"])
-async def register_user(user_data: UserCreate, db: Session = Depends(get_db)):
+@app.post("/register/", dependencies=[Depends(auth.get_current_user)],tags=["Autenticación"])
+async def register_user(user_data: schemas.UserCreate, db: Session = Depends(get_db)):
     if db.query(models.User).filter(models.User.username == user_data.username).first():
         raise HTTPException(status_code=400, detail="El usuario ya existe")
     
     hashed_password = models.User.hash_password(user_data.password)
     new_user = models.User(
         username=user_data.username,
-        hashed_password=hashed_password,
         email=user_data.email,
-        role=user_data.role
+        hashed_password=hashed_password,
+        role=user_data.role  # Guardamos el rol del usuario
     )
-    
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
