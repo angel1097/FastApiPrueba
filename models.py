@@ -13,7 +13,7 @@ class User(Base):
     email = Column(String(100), nullable=False)
     role = Column(String(50), nullable=False)
     
-    def verify_password(self, password: str) -> bool:
+    def verify_password(self, password: str):
         return pwd_context.verify(password, self.hashed_password)
     
     @staticmethod
