@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException,status
 from fastapi.security import OAuth2PasswordBearer
 from pydantic import BaseModel
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session 
 import models, schemas
 import auth
 from database import SessionLocal
@@ -34,7 +34,7 @@ class UserCreate(UserLogin):
     pass
 
 # Dependencia para obtener la sesión de la BD
-@app.get("/", tags=["General"])
+@app.get("/",dependencies=[Depends(auth.get_current_user)], tags=["General"])
 async def root():
     return {"message": "Bienvenido a la API de registros"}
 
@@ -118,37 +118,3 @@ async def eliminar_proveedor(id_proveedor: int, db: Session = Depends(get_db)):
     return {"message": "Proveedor eliminado exitosamente"}
 
 # Endpoints para futuras implementaciones
-
-@app.get("/pedidos/", tags=["Pedidos"])
-async def listar_pedidos():
-    return {"message": "Aquí estarán los pedidos en el futuro"}
-@app.post("/pedidos/", tags=["Pedidos"])
-async def listar_pedidos():
-    return {"message": "Aquí estarán los pedidos en el futuro"}
-
-@app.get("/pedidos/{id_pedido}", tags=["Pedidos"])
-async def listar_pedidos():
-    return {"message": "Aquí estarán los pedidos en el futuro"}
-@app.put("/pedidos/{id_pedido}", tags=["Pedidos"])
-async def listar_pedidos():
-    return {"message": "Aquí estarán los pedidos en el futuro"}
-@app.delete("/pedidos/{id_pedido}", tags=["Pedidos"])
-async def listar_pedidos():
-    return {"message": "Aquí estarán los pedidos en el futuro"}
-
-@app.get("/facturas/", tags=["Facturas"])
-async def listar_facturas():
-    return {"message": "Aquí estarán las facturas en el futuro"}
-
-@app.get("/facturas/{id_factura}", tags=["Facturas"])
-async def listar_facturas():
-    return {"message": "Aquí estarán las facturas en el futuro"}
-@app.post("/facturas/", tags=["Facturas"])
-async def listar_facturas():
-    return {"message": "Aquí estarán las facturas en el futuro"}
-@app.put("/facturas/{id_factura}", tags=["Facturas"])
-async def listar_facturas():
-    return {"message": "Aquí estarán las facturas en el futuro"}
-@app.delete("/facturas/{id_factura}", tags=["Facturas"])
-async def listar_facturas():
-    return {"message": "Aquí estarán las facturas en el futuro"}

@@ -2,6 +2,7 @@ from sqlalchemy import String, Integer, Column
 from database import Base
 from passlib.context import CryptContext
 
+
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 class User(Base):
